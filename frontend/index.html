@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LLM Chatbot</title>
+ <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #eef2f3;
+    background-image: url(./chatbot.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: repeat;
+  }
+
+  #chatbox {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    height: 350px;
+    overflow-y: auto;
+    margin-left: 150px;
+    /* margin-right: 20px; */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+
+  .user {
+    background: #d1e7dd;
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .bot {
+    background: #f8d7da;
+    text-align: left;
+    margin-right: auto;
+  }
+
+    #inputForm {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 0;
+    margin-left: 180px; /* replaces margin-left */
+    gap: 10px;
+    /* margin-left: 0; optional: ensure no left margin */
+    }
+
+  #inputForm input {
+    padding: 10px;
+    width: 400px;
+    max-width: 80%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    gap: 10px;
+  }
+
+  #buty{
+    display: flex;
+    gap: 10px;
+    width:13%;
+    size: 200;
+    text-align: center;
+  }
+#inputForm button {
+  padding: 10px 20px;
+  border: none;
+  background: #0d6efd;
+  color: white;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+  #inputForm button:hover {
+    background: #084dbc;
+  }
+
+  /* Media Queries for responsiveness */
+  @media screen and (max-width: 768px) {
+    body {
+      padding: 15px;
+
+    }
+
+    #chatbox {
+      height: 250px;
+      padding: 15px;
+    }
+
+    #inputForm {
+      flex-direction: column;
+      align-items: stretch;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    #inputForm input {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    #inputForm button {
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    #chatbox {
+      height: 220px;
+    }
+
+      img {
+    display: none;
+     }
+    #inputForm input,
+    #inputForm button {
+      font-size: 14px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1 style="text-align:left; color: #ccc;">🤖 Groq LLM Chatbot</h1>
+
+<div id="chatbox"></div>
+
+<form id="inputForm">
+  <input type="text" id="userInput" placeholder="Type your message..." required autocomplete="off" />
+  <button type="submit"id="buty">Send</button>
+</form>
+
+<script>
+  const chatbox = document.getElementById("chatbox");
+  const inputForm = document.getElementById("inputForm");
+  const userInput = document.getElementById("userInput");
+
+  let history = [];
+
+  inputForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    appendMessage(message, "user");
+    history.push({ role: "human", content: message });
+    userInput.value = "";
+
+    try {
+      const res = await fetch("http://localhost:5001/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          history
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.status === 200) {
+        appendMessage(data.response, "bot");
+        history.push({ role: "ai", content: data.response });
+      } else {
+        appendMessage("⚠️ Error: " + (data.error || "Unknown error"), "bot");
+      }
+    } catch (err) {
+      appendMessage("❌ Failed to connect to backend.", "bot");
+    }
+  });
+
+  function appendMessage(text, sender) {
+    const div = document.createElement("div");
+    div.className = "message " + sender;
+    div.textContent = text;
+    chatbox.appendChild(div);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+</script>
+
+</body>
+</html>
