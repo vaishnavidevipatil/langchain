@@ -1,4 +1,4 @@
-# /Langchain/main.py
+# /langchain/frontend/index.html/app.py
 LARGE LANGUAGE MODEL# 🚀 LLM Project using Groq API & LangChain
 
 This repository contains an implementation of a **Large Language Model (LLM)** application using the **Groq API** and **LangChain** for high-speed, low-latency AI inference.
@@ -20,4 +20,4 @@ This repository contains an implementation of a **Large Language Model (LLM)** a
 ├── requirements.txt     # Python dependencies
 ├── .env.example         # Example environment variables
 ├── README.md            # Documentation
-└── examples/            # Example scripts & notebooks
+└── frontend/index        #Run scripts & chat with bot
